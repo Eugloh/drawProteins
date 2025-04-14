@@ -4,8 +4,8 @@
 \alias{draw_recept_dom}
 \title{Add receptor domains to ggplot2 object.}
 \usage{
-draw_recept_dom(p, data = data, alpha = 1.0, label_domains = FALSE, label_size = 4,
-         show.legend = TRUE)
+draw_recept_dom(p, data = data, alpha = 1.0, label_domains = FALSE,
+         addon = 0.05, label_size = 4, show.legend = TRUE)
 }
 \arguments{
 \item{p}{ggplot2 object ideally created with \code{\link{draw_canvas}}.}
@@ -18,6 +18,8 @@ these parts of receptors}
 \item{alpha}{Transparency of the rectangles representing the receptor domains.}
 
 \item{label_domains}{Option to label receptor domains or not.}
+
+\item{addon}{Size of the rectangle.}
 
 \item{label_size}{Size of the text used for labels.}
 

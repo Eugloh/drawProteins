@@ -9,6 +9,7 @@ draw_domains(p,
          label_domains = TRUE,
          label_size = 4,
          alpha = 1.0,
+         addon = 0.05,
          show.legend = TRUE,
          type = "DOMAIN")
 }
@@ -25,6 +26,8 @@ data$type.}
 \item{label_size}{Size of the text used for labels.}
 
 \item{alpha}{Transparency of the rectangles representing the domains.}
+
+\item{addon}{Size of the rectangle.}
 
 \item{show.legend}{Option to include legend in this layer}
 

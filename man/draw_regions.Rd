@@ -4,7 +4,7 @@
 \alias{draw_regions}
 \title{Add protein region sites to ggplot2 object.}
 \usage{
-draw_regions(p, data = data, alpha = 1.0, show.legend=TRUE)
+draw_regions(p, data = data, alpha = 1.0, addon = 0.05, show.legend=TRUE)
 }
 \arguments{
 \item{p}{ggplot2 object ideally created with \code{\link{draw_canvas}}.}
@@ -15,6 +15,8 @@ names: 'type', 'description', 'begin', 'end', 'length', 'accession',
 data$type.}
 
 \item{alpha}{Transparency of the rectangles representing the regions.}
+
+\item{addon}{Size of the rectangle.}
 
 \item{show.legend}{Option to include legend in this layer}
 }

@@ -6,7 +6,7 @@
 \usage{
 draw_folding(p, data = data,
 show.legend = TRUE,show_strand = TRUE,show_helix = TRUE, show_turn = TRUE,
-alpha = 1.0)
+addon = 0.04, alpha = 1.0)
 }
 \arguments{
 \item{p}{ggplot2 object ideally created with \code{\link{draw_canvas}}.}
@@ -23,6 +23,8 @@ these parts of the proteins.}
 \item{show_helix}{Option to show HELIX in this layer}
 
 \item{show_turn}{Option to show TURN in this layer}
+
+\item{addon}{Adjust the size of the rectangle.}
 
 \item{alpha}{alpha Transparency of the rectangles representing the folds.}
 }

@@ -93,7 +93,7 @@ draw_chains <- function(p,
     begin=end=NULL
     p <- p + ggplot2::geom_segment(data = data[data$type == "CHAIN",],
                                    mapping = ggplot2::aes(x = begin, xend = end, y = order, yend = order),
-                                   colour = outline, linewidth = size)
+                                   colour = fill, linewidth = size)
 
     if(label_chains == TRUE){
         p <- p +
@@ -121,6 +121,7 @@ draw_chains <- function(p,
 #'          label_domains = TRUE,
 #'          label_size = 4,
 #'          alpha = 1.0,
+#'          addon = 0.05,
 #'          show.legend = TRUE,
 #'          type = "DOMAIN")
 #'
@@ -133,6 +134,7 @@ draw_chains <- function(p,
 #' @param label_size Size of the text used for labels.
 #' @param show.legend Option to include legend in this layer
 #' @param type Can change to show other protein features
+#' @param addon Size of the rectangle.
 #' @param alpha Transparency of the rectangles representing the domains.
 #' @return A ggplot2 object either in the plot window or as an object with an
 #' additional geom_rect layer.
@@ -151,27 +153,9 @@ draw_domains <- function(p,
                         label_domains = TRUE,
                         label_size = 4,
                         alpha = 1.0,
+                        addon = 0.05,
                         show.legend = TRUE,
                         type = "DOMAIN"){
-    # begin=end=description=NULL
-    # p <- p + ggplot2::geom_rect(data= data[data$type == type,],
-    #         mapping=ggplot2::aes(xmin=begin,
-    #                     xmax=end,
-    #                     ymin=order-0.25,
-    #                     ymax=order+0.25,
-    #                     fill=description),
-    #         alpha = alpha,
-    #         show.legend = show.legend)
-    #
-    # if(label_domains == TRUE){
-    #     p <- p + ggplot2::geom_label(data = data[data$type == type, ],
-    #                     ggplot2::aes(x = begin + (end-begin)/2,
-    #                         y = order,
-    #                         label = description),
-    #                         size = label_size)
-    # }
-    #
-    # return(p)
 
   # domain_data <- data[data$type == type, ]
   begin=end=description=NULL
@@ -179,7 +163,7 @@ draw_domains <- function(p,
     data= data[data$type == type,],
     mapping = ggplot2::aes(
       xmin = begin, xmax = end,
-      ymin = order - 0.25, ymax = order + 0.25,
+      ymin = order - addon, ymax = order + addon,
       fill = description,
       tooltip = description
     ),
@@ -215,8 +199,8 @@ draw_domains <- function(p,
 #' \code{\link[ggplot2]{geom_point}} is used to draw each of the
 #' phosphorylation sites at their location as determined by data object.
 #'
-#' @usage draw_phospho(p, data = data, size = 2,
-#'          fill = "yellow", alpha = 1.0, show.legend = FALSE)
+#' @usage draw_phospho(p, data = data, size = 2, fill = "yellow", addon = 0.05,
+#' alpha = 1.0, show.legend = FALSE)
 #'
 #' @param p ggplot2 object ideally created with \code{\link{draw_canvas}}.
 #' @param data Dataframe of one or more rows with the following column
@@ -227,6 +211,7 @@ draw_domains <- function(p,
 #' @param fill Colour of the circle.
 #' @param alpha Transparency of the circles representing the protein
 #' phosphorylation sites.
+#' @param addon Size of the rectangle.
 #' @param show.legend Option to include legend in this layer
 #'
 #' @return A ggplot2 object either in the plot window or as an object with an
@@ -245,12 +230,13 @@ draw_domains <- function(p,
 draw_phospho <- function(p, data = data,
                         size = 2,
                         fill = "yellow",
+                        addon = 0.05,
                         alpha = 1.0,
                         show.legend = FALSE){
     begin=end=description=NULL
     p <- p + ggplot2::geom_point(data = phospho_site_info(data),
                                 ggplot2::aes(x = begin,
-                        y = order+0.25),
+                        y = order+addon),
                         shape = 21,
                         colour = "black",
                         fill = fill,
@@ -271,7 +257,7 @@ draw_phospho <- function(p, data = data,
 #' The ggplot2 function \code{geom_rect} is used to draw each of the
 #' regions proportional to their number of amino acids (length).
 #'
-#' @usage draw_regions(p, data = data, alpha = 1.0, show.legend=TRUE)
+#' @usage draw_regions(p, data = data, alpha = 1.0, addon = 0.05, show.legend=TRUE)
 #'
 #' @param p ggplot2 object ideally created with \code{\link{draw_canvas}}.
 #' @param data Dataframe of one or more rows with the following column
@@ -280,6 +266,7 @@ draw_phospho <- function(p, data = data,
 #' data$type.
 #' @param alpha Transparency of the rectangles representing the regions.
 #' @param show.legend Option to include legend in this layer
+#' @param addon Size of the rectangle.
 #' @return A ggplot2 object either in the plot window or as an object with an
 #' additional geom_rect layer.
 #'
@@ -293,14 +280,15 @@ draw_phospho <- function(p, data = data,
 #' @export
 # called draw_regions
 # to draw REGIONs
-draw_regions <- function(p, data = data, alpha = 1.0, show.legend=TRUE){
+draw_regions <- function(p, data = data, alpha = 1.0,
+                         addon= 0.05, show.legend=TRUE){
     begin=end=description=NULL
     ## plot motifs fill by description
     p <- p + ggplot2::geom_rect(data= data[data$type == "REGION",],
                         mapping=ggplot2::aes(xmin=begin,
                                 xmax=end,
-                                ymin=order-0.25,
-                                ymax=order+0.25,
+                                ymin=order-addon,
+                                ymax=order+addon,
                                 fill=description),
                         alpha = alpha,
                         show.legend = show.legend)
@@ -319,7 +307,7 @@ draw_regions <- function(p, data = data, alpha = 1.0, show.legend=TRUE){
 #' The ggplot2 function \code{geom_rect} is used to draw each of the
 #' motifs proportional to their number of amino acids (length).
 #'
-#' @usage draw_motif(p, data = data, alpha = 1.0, show.legend = TRUE)
+#' @usage draw_motif(p, data = data, addon = 0.05, alpha = 1.0, show.legend = TRUE)
 #'
 #' @param p ggplot2 object ideally created with \code{\link{draw_canvas}}.
 #' @param data Dataframe of one or more rows with the following column
@@ -328,6 +316,7 @@ draw_regions <- function(p, data = data, alpha = 1.0, show.legend=TRUE){
 #' data$type.
 #' @param alpha Transparency of the rectangles representing the motifs.
 #' @param show.legend Option to include legend in this layer
+#' @param addon Size of the rectangle.
 #' @return A ggplot2 object either in the plot window or as an object with an
 #' additional geom_rect layer.
 #'
@@ -341,14 +330,14 @@ draw_regions <- function(p, data = data, alpha = 1.0, show.legend=TRUE){
 #' @export
 # called draw_motif
 # to draw MOTIFs - no label at the moment.
-draw_motif <- function(p, data = data, alpha = 1.0, show.legend = TRUE){
+draw_motif <- function(p, data = data, addon=0.05, alpha = 1.0, show.legend = TRUE){
     begin=end=description=NULL
     ## plot motifs fill by description
     p <- p + ggplot2::geom_rect(data= data[data$type == "MOTIF",],
                                 mapping=ggplot2::aes(xmin=begin,
                                 xmax=end,
-                                ymin=order-0.25,
-                                ymax=order+0.25,
+                                ymin=order-addon,
+                                ymax=order+addon,
                                 fill=description),
                                 alpha = alpha,
                                 show.legend = show.legend)
@@ -368,7 +357,7 @@ draw_motif <- function(p, data = data, alpha = 1.0, show.legend = TRUE){
 #' amino acids (length).
 #'
 #' @usage draw_repeat(p, data = data, label_size = 2, outline = "dimgrey",
-#'             fill = "dimgrey", alpha = 1.0,
+#'             fill = "dimgrey", alpha = 1.0, addon = 0.05,
 #'             label_repeats = TRUE, show.legend = TRUE)
 #'
 #' @param p ggplot2 object ideally created with \code{\link{draw_canvas}}.
@@ -380,6 +369,7 @@ draw_motif <- function(p, data = data, alpha = 1.0, show.legend = TRUE){
 #' @param outline Colour of the outline of each repeat.
 #' @param fill Colour of the fill of each repeat.
 #' @param alpha Transparency of the rectangles representing the repeats.
+#' @param addon Size of the rectangle.
 #' @param label_repeats Option to label repeats or not.
 #' @param show.legend Option to include legend in this layer
 #' @return A ggplot2 object either in the plot window or as an object with an
@@ -401,6 +391,7 @@ draw_repeat <- function(p, data = data,
                         outline = "dimgrey",
                         fill = "dimgrey",
                         alpha = 1.0,
+                        addon = 0.05,
                         label_repeats = TRUE,
                         show.legend = TRUE){
     begin=end=description=NULL
@@ -408,8 +399,8 @@ draw_repeat <- function(p, data = data,
     p <- p + ggplot2::geom_rect(data= data[data$type == "REPEAT",],
                         mapping=ggplot2::aes(xmin=begin,
                                 xmax=end,
-                                ymin=order-0.25,
-                                ymax=order+0.25),
+                                ymin=order-addon,
+                                ymax=order+addon),
                         colour = outline,
                         fill = fill,
                         alpha = alpha,
@@ -436,8 +427,8 @@ draw_repeat <- function(p, data = data,
 #' The ggplot2 function \code{geom_rect} is used to draw each of the domain
 #' chains proportional to their number of amino acids (length).
 #'
-#' @usage draw_recept_dom(p, data = data, alpha = 1.0, label_domains = FALSE, label_size = 4,
-#'          show.legend = TRUE)
+#' @usage draw_recept_dom(p, data = data, alpha = 1.0, label_domains = FALSE,
+#'          addon = 0.05, label_size = 4, show.legend = TRUE)
 #'
 #' @param p ggplot2 object ideally created with \code{\link{draw_canvas}}.
 #' @param data Dataframe of one or more rows with the following column
@@ -448,6 +439,7 @@ draw_repeat <- function(p, data = data,
 #' @param label_domains Option to label receptor domains or not.
 #' @param label_size Size of the text used for labels.
 #' @param show.legend Option to include legend in this layer
+#' @param addon Size of the rectangle.
 #' @return A ggplot2 object either in the plot window or as an object with an
 #' additional geom_rect layer.
 #'
@@ -467,6 +459,7 @@ draw_recept_dom <- function(p,
                             data = data,
                             alpha = 1.0,
                             label_domains = FALSE,
+                            addon = 0.05,
                             label_size = 4,
                             show.legend = TRUE){
     begin=end=description=NULL
@@ -474,8 +467,8 @@ draw_recept_dom <- function(p,
     p <- p + ggplot2::geom_rect(data= data[data$type == "TOPO_DOM",],
                             mapping=ggplot2::aes(xmin=begin,
                                 xmax=end,
-                                ymin=order-0.25,
-                                ymax=order+0.25,
+                                ymin=order-addon,
+                                ymax=order+addon,
                                 fill=description),
                             alpha = alpha,
                             show.legend = show.legend)
@@ -483,8 +476,8 @@ draw_recept_dom <- function(p,
     p <- p + ggplot2::geom_rect(data= data[data$type == "TRANSMEM",],
                             mapping=ggplot2::aes(xmin=begin,
                                 xmax=end,
-                                ymin=order-0.25,
-                                ymax=order+0.25,
+                                ymin=order-addon,
+                                ymax=order+addon,
                                 fill=description),
                             alpha = alpha,
                             show.legend = show.legend)
@@ -519,7 +512,7 @@ draw_recept_dom <- function(p,
 #'
 #' @usage draw_folding(p, data = data,
 #' show.legend = TRUE,show_strand = TRUE,show_helix = TRUE, show_turn = TRUE,
-#' alpha = 1.0)
+#' addon = 0.04, alpha = 1.0)
 #'
 #' @param p ggplot2 object ideally created with \code{\link{draw_canvas}}.
 #' @param data Dataframe of one or more rows with the following column
@@ -530,6 +523,7 @@ draw_recept_dom <- function(p,
 #' @param show_strand Option to show STRAND in this layer
 #' @param show_helix Option to show HELIX in this layer
 #' @param show_turn Option to show TURN in this layer
+#' @param addon Adjust the size of the rectangle.
 #' @param alpha alpha Transparency of the rectangles representing the folds.
 #'
 #' @return A ggplot2 object either in the plot window or as an object with an
@@ -551,6 +545,7 @@ draw_folding <- function(p,
     show_strand = TRUE,
     show_helix = TRUE,
     show_turn = TRUE,
+    addon = 0.04,
     alpha = 1.0){
     begin=end=description=type=NULL
     # STRAND first
@@ -559,8 +554,8 @@ draw_folding <- function(p,
             data = dplyr::filter(data, grepl('STRAND', type)),
             mapping=ggplot2::aes(xmin=begin,
             xmax=end,
-            ymin=order-0.2,
-            ymax=order+0.2,
+            ymin=order-addon,
+            ymax=order+addon,
             fill=type),
             alpha = alpha,
             show.legend = show.legend)
@@ -570,8 +565,8 @@ draw_folding <- function(p,
         p <- p + ggplot2::geom_rect(data= data[data$type == "HELIX",],
             mapping=ggplot2::aes(xmin=begin,
             xmax=end,
-            ymin=order-0.2,
-            ymax=order+0.2,
+            ymin=order-addon,
+            ymax=order+addon,
             fill=type),
             alpha = alpha,
             show.legend = show.legend)
@@ -581,8 +576,8 @@ draw_folding <- function(p,
         p <- p + ggplot2::geom_rect(data= data[data$type == "TURN",],
             mapping=ggplot2::aes(xmin=begin,
             xmax=end,
-            ymin=order-0.2,
-            ymax=order+0.2,
+            ymin=order-addon,
+            ymax=order+addon,
             fill=type),
             alpha = alpha,
             show.legend = show.legend)

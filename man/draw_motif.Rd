@@ -4,7 +4,7 @@
 \alias{draw_motif}
 \title{Add protein motifs sites to ggplot2 object.}
 \usage{
-draw_motif(p, data = data, alpha = 1.0, show.legend = TRUE)
+draw_motif(p, data = data, addon = 0.05, alpha = 1.0, show.legend = TRUE)
 }
 \arguments{
 \item{p}{ggplot2 object ideally created with \code{\link{draw_canvas}}.}
@@ -13,6 +13,8 @@ draw_motif(p, data = data, alpha = 1.0, show.legend = TRUE)
 names: 'type', 'description', 'begin', 'end', 'length', 'accession',
 'entryName', 'taxid', 'order'. Must contain a minimum of one "CHAIN" as
 data$type.}
+
+\item{addon}{Size of the rectangle.}
 
 \item{alpha}{Transparency of the rectangles representing the motifs.}
 

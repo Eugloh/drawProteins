@@ -5,7 +5,7 @@
 \title{Add protein repeats sites to ggplot2 object.}
 \usage{
 draw_repeat(p, data = data, label_size = 2, outline = "dimgrey",
-            fill = "dimgrey", alpha = 1.0,
+            fill = "dimgrey", alpha = 1.0, addon = 0.05,
             label_repeats = TRUE, show.legend = TRUE)
 }
 \arguments{
@@ -23,6 +23,8 @@ data$type.}
 \item{fill}{Colour of the fill of each repeat.}
 
 \item{alpha}{Transparency of the rectangles representing the repeats.}
+
+\item{addon}{Size of the rectangle.}
 
 \item{label_repeats}{Option to label repeats or not.}
 

@@ -4,8 +4,8 @@
 \alias{draw_phospho}
 \title{Add protein phosphorylation sites to ggplot2 object.}
 \usage{
-draw_phospho(p, data = data, size = 2,
-         fill = "yellow", alpha = 1.0, show.legend = FALSE)
+draw_phospho(p, data = data, size = 2, fill = "yellow", addon = 0.05,
+alpha = 1.0, show.legend = FALSE)
 }
 \arguments{
 \item{p}{ggplot2 object ideally created with \code{\link{draw_canvas}}.}
@@ -18,6 +18,8 @@ data$type.}
 \item{size}{Size of the circle}
 
 \item{fill}{Colour of the circle.}
+
+\item{addon}{Size of the rectangle.}
 
 \item{alpha}{Transparency of the circles representing the protein
 phosphorylation sites.}
