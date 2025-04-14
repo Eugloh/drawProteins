@@ -8,5 +8,4 @@
 #'
 #'
 #' @name drawProteins
-#' @docType package
-NULL
+"_PACKAGE"

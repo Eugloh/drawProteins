@@ -1,5 +1,11 @@
-Changing tests based on an updated version of ggplot2 to 3.5.0 which changes
-the length of the ggplot object.
+geom rect changed to geom segment.
+
+
+CHANGES IN VERSION 1.23.0
+-----------------------
+
+    o Changing tests based on an updated version of ggplot2 to 3.5.0 which
+    changes the length of the ggplot object.
 
 
 CHANGES IN VERSION 1.9.0 (devel)
@@ -52,7 +58,6 @@ CHANGES IN VERSION 0.98.3
 -----------------------
 
 FEATURES
-
     o New function called draw_canvas. This function was previously within
     draw_chains but has now been pulled out to allow the generation of a canvas
     separately from the chains. It did require quite a rewrite but I think
@@ -63,16 +68,12 @@ CHANGES IN VERSION 0.98.2
 -----------------------
 
 FEATURES
-
     o Rename functions from geom to draw. E.g geom_chains is now geom_draw.
     This is because they weren't really geoms and using the word draw seem
     more helpful and a better reflection of the function.
 
-
-
-CHANGES VERSION 0.98.1
--------------------------
+CHANGES IN VERSION 0.98.1
+-----------------------
 
 FEATURES
-
     o Drawing protein schematics from Uniprot database with Accession numbers

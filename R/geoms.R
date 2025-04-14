@@ -91,15 +91,9 @@ draw_chains <- function(p,
                         label_size = 4){
 
     begin=end=NULL
-    p <- p + ggplot2::geom_rect(data = data[data$type == "CHAIN",],
-                        mapping=ggplot2::aes(xmin=begin,
-                                            xmax=end,
-                                            ymin=order-0.2,
-                                            ymax=order+0.2),
-                        colour = outline,
-                        fill = fill,
-                        size = size,
-                        alpha = alpha)
+    p <- p + ggplot2::geom_segment(data = data[data$type == "CHAIN",],
+                                   mapping = ggplot2::aes(x = begin, xend = end, y = order, yend = order),
+                                   colour = outline, linewidth = size)
 
     if(label_chains == TRUE){
         p <- p +
@@ -159,25 +153,54 @@ draw_domains <- function(p,
                         alpha = 1.0,
                         show.legend = TRUE,
                         type = "DOMAIN"){
-    begin=end=description=NULL
-    p <- p + ggplot2::geom_rect(data= data[data$type == type,],
-            mapping=ggplot2::aes(xmin=begin,
-                        xmax=end,
-                        ymin=order-0.25,
-                        ymax=order+0.25,
-                        fill=description),
-            alpha = alpha,
-            show.legend = show.legend)
+    # begin=end=description=NULL
+    # p <- p + ggplot2::geom_rect(data= data[data$type == type,],
+    #         mapping=ggplot2::aes(xmin=begin,
+    #                     xmax=end,
+    #                     ymin=order-0.25,
+    #                     ymax=order+0.25,
+    #                     fill=description),
+    #         alpha = alpha,
+    #         show.legend = show.legend)
+    #
+    # if(label_domains == TRUE){
+    #     p <- p + ggplot2::geom_label(data = data[data$type == type, ],
+    #                     ggplot2::aes(x = begin + (end-begin)/2,
+    #                         y = order,
+    #                         label = description),
+    #                         size = label_size)
+    # }
+    #
+    # return(p)
 
-    if(label_domains == TRUE){
-        p <- p + ggplot2::geom_label(data = data[data$type == type, ],
-                        ggplot2::aes(x = begin + (end-begin)/2,
-                            y = order,
-                            label = description),
-                            size = label_size)
-    }
+  # domain_data <- data[data$type == type, ]
+  begin=end=description=NULL
+  p <- p + ggiraph::geom_rect_interactive(
+    data= data[data$type == type,],
+    mapping = ggplot2::aes(
+      xmin = begin, xmax = end,
+      ymin = order - 0.25, ymax = order + 0.25,
+      fill = description,
+      tooltip = description
+    ),
+    show.legend = show.legend
+  )
 
-    return(p)
+  if (label_domains) {
+    p <- p + ggiraph::geom_label_interactive(
+      data= data[data$type == type,],
+      mapping = ggplot2::aes(
+        x = begin + (end - begin) / 2,
+        y = order,
+        label = description,
+        tooltip = description
+      ),
+      size = label_size
+    )
+  }
+
+  return(p)
+
 }
 
 

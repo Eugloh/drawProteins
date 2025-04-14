@@ -51,7 +51,7 @@ test_that("draw_chains",{
   expect_equal(length(p$layers), 2)
 # https://stackoverflow.com/questions/13457562/how-to-determine-the-geom-type-of-each-layer-of-a-ggplot2-object/43982598#43982598
   # types of layers...
-  expect_equal(class(p$layers[[1]]$geom)[1], "GeomRect")
+  expect_equal(class(p$layers[[1]]$geom)[1], "GeomSegment")  # drawprotein chain here
   expect_equal(class(p$layers[[2]]$geom)[1], "GeomText")
   expect_equal(length(five_rel_data[five_rel_data$type == "DOMAIN",]),
               length(p$layers[[1]]$data))
@@ -89,9 +89,10 @@ test_that("draw_domains",{
               length(p$layers[[3]]$data))
 
   # types of layers, 3 and 4 added by draw_domains
-  expect_equal(class(p$layers[[3]]$geom)[1], "GeomRect")
-  expect_equal(class(p$layers[[4]]$geom)[1], "GeomLabel")
-
+  # expect_equal(class(p$layers[[3]]$geom)[1], "GeomRect")
+  # expect_equal(class(p$layers[[4]]$geom)[1], "GeomLabel")
+  expect_equal(class(p$layers[[3]]$geom)[1], "GeomInteractiveRect") # ggiraph
+  expect_equal(class(p$layers[[4]]$geom)[1], "GeomInteractiveLabel") # ggiraph
 })
 
 
@@ -159,7 +160,7 @@ test_that("draw_motif",{
   expect_equal(class(p$layers[[3]]$geom)[1], "GeomRect")
   # https://stackoverflow.com/questions/13457562/how-to-determine-the-geom-type-of-each-layer-of-a-ggplot2-object/43982598#43982598
   # types of layers...
-  expect_equal(class(p$layers[[1]]$geom)[1], "GeomRect")
+  expect_equal(class(p$layers[[1]]$geom)[1], "GeomSegment")  # drawprotein chain here
   expect_equal(class(p$layers[[2]]$geom)[1], "GeomText")
 
   # p should have some labels
@@ -203,7 +204,7 @@ test_that("draw_regions",{
   # two from draw_chains and one from draw_regions
   # https://stackoverflow.com/questions/13457562/how-to-determine-the-geom-type-of-each-layer-of-a-ggplot2-object/43982598#43982598
   # types of layers...
-  expect_equal(class(p$layers[[1]]$geom)[1], "GeomRect")
+  expect_equal(class(p$layers[[1]]$geom)[1], "GeomSegment")  # drawprotein chain here
   expect_equal(class(p$layers[[2]]$geom)[1], "GeomText")
   expect_equal(class(p$layers[[3]]$geom)[1], "GeomRect")
 
@@ -293,7 +294,7 @@ test_that("draw_recept_dom",{
   expect_equal(length(p$layers), 4)
   # https://stackoverflow.com/questions/13457562/how-to-determine-the-geom-type-of-each-layer-of-a-ggplot2-object/43982598#43982598
   # types of layers...
-  expect_equal(class(p$layers[[1]]$geom)[1], "GeomRect")
+  expect_equal(class(p$layers[[1]]$geom)[1], "GeomSegment")  # drawprotein chain here
   expect_equal(class(p$layers[[2]]$geom)[1], "GeomText")
   expect_equal(class(p$layers[[3]]$geom)[1], "GeomRect")
   expect_equal(class(p$layers[[4]]$geom)[1], "GeomRect")
@@ -321,7 +322,7 @@ test_that("draw_recept_dom",{
   expect_equal(length(p$layers), 6)
   # https://stackoverflow.com/questions/13457562/how-to-determine-the-geom-type-of-each-layer-of-a-ggplot2-object/43982598#43982598
   # types of layers...
-  expect_equal(class(p$layers[[1]]$geom)[1], "GeomRect")
+  expect_equal(class(p$layers[[1]]$geom)[1], "GeomSegment")  # drawprotein chain here
   expect_equal(class(p$layers[[2]]$geom)[1], "GeomText")
   expect_equal(class(p$layers[[3]]$geom)[1], "GeomRect")
   expect_equal(class(p$layers[[4]]$geom)[1], "GeomRect")
@@ -378,7 +379,7 @@ test_that("draw_folding",{
   expect_equal(length(p$layers), 5)
   # https://stackoverflow.com/questions/13457562/how-to-determine-the-geom-type-of-each-layer-of-a-ggplot2-object/43982598#43982598
   # types of layers...
-  expect_equal(class(p$layers[[1]]$geom)[1], "GeomRect")
+  expect_equal(class(p$layers[[1]]$geom)[1], "GeomSegment")  # drawprotein chain here
   expect_equal(class(p$layers[[2]]$geom)[1], "GeomText")
   expect_equal(class(p$layers[[3]]$geom)[1], "GeomRect")
   expect_equal(class(p$layers[[4]]$geom)[1], "GeomRect")

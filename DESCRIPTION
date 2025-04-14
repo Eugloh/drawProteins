@@ -1,6 +1,6 @@
 Package: drawProteins
 Title: Package to Draw Protein Schematics from Uniprot API output
-Version: 1.23.0
+Version: 1.23.1
 Authors@R: person("Paul", "Brennan", email = "brennanpincardiff@gmail.com", 
                     role = c("aut", "cre"))
 Description: This package draws protein schematics from Uniprot API output. 
@@ -15,14 +15,15 @@ Imports: ggplot2,
     httr,
     dplyr,
     readr,
-    tidyr
+    tidyr, 
+    ggiraph
 Suggests: covr,
     testthat,
     knitr,
     rmarkdown,
     BiocStyle
 VignetteBuilder: knitr
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 URL: https://github.com/brennanpincardiff/drawProteins
 BugReports: https://github.com/brennanpincardiff/drawProteins/issues/new
 biocViews: Visualization, FunctionalPrediction, Proteomics

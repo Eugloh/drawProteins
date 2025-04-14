@@ -35,7 +35,7 @@ test_that("parse_gff",{
 
   # type of each layer
   # types of layers...
-  expect_equal(class(p$layers[[1]]$geom)[1], "GeomRect")
+  expect_equal(class(p$layers[[1]]$geom)[1], "GeomSegment")  # drawprotein chain here
   expect_equal(class(p$layers[[2]]$geom)[1], "GeomText")
   expect_equal(class(p$layers[[3]]$geom)[1], "GeomRect")
   expect_equal(class(p$layers[[4]]$geom)[1], "GeomRect")
@@ -83,7 +83,7 @@ test_that("parse_gff",{
 
   # type of each layer
   # types of layers...
-  expect_equal(class(p$layers[[1]]$geom)[1], "GeomRect")
+  expect_equal(class(p$layers[[1]]$geom)[1], "GeomSegment")  # drawprotein chain here
   expect_equal(class(p$layers[[2]]$geom)[1], "GeomText")
   expect_equal(class(p$layers[[3]]$geom)[1], "GeomRect")
   expect_equal(class(p$layers[[4]]$geom)[1], "GeomRect")
