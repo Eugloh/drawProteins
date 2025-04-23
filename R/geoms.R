@@ -5,13 +5,17 @@
 #' creates the basic plot element by determining the length of the longest
 #' protein and the number of proteins to plot.
 #'
-#' @usage draw_canvas(data)
+#' @usage draw_canvas(data, y_min = 0.5, add_y_max = 0.5)
 #'
 #' @param data Dataframe of one or more rows with the following column
 #' names: 'type', 'description', 'begin', 'end', 'length', 'accession',
 #' 'entryName', 'taxid', 'order'. Must contain a minimum of one "CHAIN" as
 #' data$type.
 #'
+#' @param add_y_max y value to add to the top of the plot, ie the max order
+#' value.
+#' @param y_min y min value default is 0.5 as order is meant to begin at 1 could
+#' be set to negative if needed.
 #' @return A ggplot2 object either in the plot window or as an object.
 #'
 #' @examples
@@ -22,10 +26,10 @@
 #' @import ggplot2
 #'
 #' @export
-draw_canvas <- function(data){
+draw_canvas <- function(data, y_min = 0.5, add_y_max = 0.5){
     begin=end=NULL
     p <- ggplot2::ggplot()
-    p <- p + ggplot2::ylim(0.5, max(data$order)+0.5)
+    p <- p + ggplot2::ylim(y_min, max(data$order)+add_y_max)
     p <- p + ggplot2::xlim(-max(data$end, na.rm=TRUE)*0.2,
         max(data$end, na.rm=TRUE) + max(data$end, na.rm=TRUE)*0.1)
     p <- p + ggplot2::labs(x = "Amino acid number") # label x-axis

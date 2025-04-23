@@ -4,13 +4,19 @@
 \alias{draw_canvas}
 \title{Create ggplot2 object with protein chains from feature database}
 \usage{
-draw_canvas(data)
+draw_canvas(data, y_min = 0.5, add_y_max = 0.5)
 }
 \arguments{
 \item{data}{Dataframe of one or more rows with the following column
 names: 'type', 'description', 'begin', 'end', 'length', 'accession',
 'entryName', 'taxid', 'order'. Must contain a minimum of one "CHAIN" as
 data$type.}
+
+\item{y_min}{y min value default is 0.5 as order is meant to begin at 1 could
+be set to negative if needed.}
+
+\item{add_y_max}{y value to add to the top of the plot, ie the max order
+value.}
 }
 \value{
 A ggplot2 object either in the plot window or as an object.
