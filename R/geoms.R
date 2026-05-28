@@ -5,7 +5,7 @@
 #' creates the basic plot element by determining the length of the longest
 #' protein and the number of proteins to plot.
 #'
-#' @usage draw_canvas(data, y_min = 0.5, add_y_max = 0.5)
+#' @usage draw_canvas(data, y_min = 0.5, add_y_max = 0.5, x_limits = NULL)
 #'
 #' @param data Dataframe of one or more rows with the following column
 #' names: 'type', 'description', 'begin', 'end', 'length', 'accession',
@@ -16,6 +16,7 @@
 #' value.
 #' @param y_min y min value default is 0.5 as order is meant to begin at 1 could
 #' be set to negative if needed.
+#' @param x_limits Option to customize x-axis limits (default is NULL, using a formula based on maximum protein length).
 #' @return A ggplot2 object either in the plot window or as an object.
 #'
 #' @examples
@@ -24,17 +25,36 @@
 #' draw_canvas(five_rel_data)
 #'
 #' @import ggplot2
+#' @importFrom scales extended_breaks
 #'
 #' @export
-draw_canvas <- function(data, y_min = 0.5, add_y_max = 0.5){
-    begin=end=NULL
+draw_canvas <- function(data, y_min = 0.5, add_y_max = 0.5, x_limits = NULL) {
+    begin = end = NULL
     p <- ggplot2::ggplot()
-    p <- p + ggplot2::ylim(y_min, max(data$order)+add_y_max)
-    p <- p + ggplot2::xlim(-max(data$end, na.rm=TRUE)*0.2,
-        max(data$end, na.rm=TRUE) + max(data$end, na.rm=TRUE)*0.1)
-    p <- p + ggplot2::labs(x = "Amino acid number") # label x-axis
-    p <- p + ggplot2::labs(y = "") # label y-axis
-
+    
+    # Set y-limits
+    p <- p + ggplot2::ylim(y_min, max(data$order) + add_y_max)
+    
+    # Calculate default visual limits if x_limits not supplied
+    max_end <- max(data$end, na.rm = TRUE)
+    if (is.null(x_limits)) {
+        # Visual limits (with headroom on left and right)
+        x_limits <- c(-max_end * 0.2, max_end * 1.1)
+    }
+    
+    # Use coord_cartesian so text/labels drawn at negative coordinates are NOT discarded
+    p <- p + ggplot2::coord_cartesian(xlim = x_limits, expand = FALSE, clip = "off")
+    
+    # Format scale_x_continuous to prevent negative tick marks on the axis
+    p <- p + ggplot2::scale_x_continuous(
+        breaks = function(limits) {
+            br <- scales::extended_breaks()(limits)
+            br[br >= 0]
+        }
+    )
+    
+    p <- p + ggplot2::labs(x = "Amino acid number")
+    p <- p + ggplot2::labs(y = "")
     return(p)
 }
 

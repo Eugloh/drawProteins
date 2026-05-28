@@ -4,7 +4,7 @@
 \alias{draw_canvas}
 \title{Create ggplot2 object with protein chains from feature database}
 \usage{
-draw_canvas(data, y_min = 0.5, add_y_max = 0.5)
+draw_canvas(data, y_min = 0.5, add_y_max = 0.5, x_limits = NULL)
 }
 \arguments{
 \item{data}{Dataframe of one or more rows with the following column
@@ -17,6 +17,8 @@ be set to negative if needed.}
 
 \item{add_y_max}{y value to add to the top of the plot, ie the max order
 value.}
+
+\item{x_limits}{Option to customize x-axis limits (default is NULL, using a formula based on maximum protein length).}
 }
 \value{
 A ggplot2 object either in the plot window or as an object.

@@ -21,4 +21,9 @@ Useful links:
 \author{
 \strong{Maintainer}: Paul Brennan \email{brennanpincardiff@gmail.com}
 
+Authors:
+\itemize{
+  \item Paul Brennan \email{brennanpincardiff@gmail.com}
+}
+
 }
