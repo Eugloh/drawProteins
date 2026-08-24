@@ -111,6 +111,31 @@ p <- draw_chains(p, rel_data)
 p
 ```
 
+## Drawing complete translated precursors
+
+For a processed protein, UniProt's `CHAIN` can describe the mature product
+rather than the complete translated sequence. The opt-in precursor extent
+draws only the visual backbone from residue 1 through the true translated
+sequence length. It does not renumber or modify any UniProt feature coordinate.
+
+For example, ADAM10 has SIGNAL and PROPEP annotations before its mature CHAIN.
+Those annotations explain observations in precursor coordinates that occur
+before the mature product:
+
+```{r adam10_precursor, eval=FALSE}
+features <- feature_to_dataframe(get_features("O14672"))
+p <- draw_canvas(features)
+p <- draw_chains(p, features, extent = "precursor")
+p <- draw_domains(p, features, type = "SIGNAL", label_domains = FALSE)
+p <- draw_domains(p, features, type = "PROPEP", label_domains = FALSE)
+p <- draw_domains(p, features, type = "DOMAIN", label_domains = FALSE)
+p
+```
+
+The SIGNAL, PROPEP, CHAIN, and DOMAIN rows keep their full-sequence UniProt
+coordinates. The default `draw_chains(p, features)` remains the annotated
+CHAIN rendering for backward compatibility.
+
 
 Now, we add the domains which are drawn to scale in terms of their lengths. We
 use the `draw_domains()` function to which we have to provide the

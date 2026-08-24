@@ -33,6 +33,54 @@ test_that("draw_canvas",{
 # unit tests for draw_chains
 context("draw_chains")
 
+precursor_geometry_fixture <- function() {
+  data.frame(
+    type = c("CHAIN", "DOMAIN", "CHAIN", "CHAIN"),
+    description = c("Mature chain", "Domain", "Mature chain", "Chain"),
+    begin = c(214, 220, 214, 1),
+    end = c(748, 456, 748, 100),
+    length = c(534, 236, 534, 99),
+    accession = c("TEST_PROCESSED", "TEST_PROCESSED",
+                  "TEST_PROCESSED", "TEST_UNPROCESSED"),
+    entryName = c("TEST_PROCESSED_HUMAN", "TEST_PROCESSED_HUMAN",
+                  "TEST_PROCESSED_HUMAN", "TEST_UNPROCESSED_HUMAN"),
+    taxid = 9606,
+    sequenceLength = c(748L, 748L, 748L, 100L),
+    order = c(1, 1, 2, 3),
+    stringsAsFactors = FALSE
+  )
+}
+
+test_that("precursor geometry creates one full-length segment per track", {
+  result <- precursor_chain_data(precursor_geometry_fixture())
+
+  expect_equal(nrow(result), 3)
+  expect_equal(result$accession,
+               c("TEST_PROCESSED", "TEST_PROCESSED", "TEST_UNPROCESSED"))
+  expect_equal(result$order, c(1, 2, 3))
+  expect_equal(result$begin, c(1, 1, 1))
+  expect_equal(result$end, c(748, 748, 100))
+})
+
+test_that("precursor geometry rejects invalid or conflicting lengths", {
+  data <- precursor_geometry_fixture()
+  data$sequenceLength[2] <- 749L
+  expect_error(precursor_chain_data(data),
+               "TEST_PROCESSED.*order 1.*conflicting sequenceLength")
+
+  for (bad_length in list(NA_real_, 0, -1, Inf)) {
+    data <- precursor_geometry_fixture()
+    data$sequenceLength[data$order == 3] <- bad_length
+    expect_error(precursor_chain_data(data),
+                 "TEST_UNPROCESSED.*order 3.*sequenceLength")
+  }
+
+  data <- precursor_geometry_fixture()
+  data$sequenceLength <- NULL
+  expect_error(precursor_chain_data(data),
+               "sequenceLength.*regenerate.*feature_to_dataframe")
+})
+
 test_that("draw_chains",{
 
   # load data from the package
@@ -58,6 +106,29 @@ test_that("draw_chains",{
   expect_equal(class(p$layers[[2]]$geom)[1], "GeomText")
   expect_equal(length(five_rel_data[five_rel_data$type == "DOMAIN",]),
               length(p$layers[[1]]$data))
+})
+
+test_that("draw_chains defaults to annotated chains and opts into precursor", {
+  data <- precursor_geometry_fixture()
+  original <- data
+
+  annotated <- draw_chains(draw_canvas(data), data, label_chains = FALSE)
+  expect_equal(annotated$layers[[1]]$data$begin, c(214, 214, 1))
+  expect_equal(annotated$layers[[1]]$data$end, c(748, 748, 100))
+
+  precursor <- draw_chains(draw_canvas(data), data,
+                           extent = "precursor", label_chains = FALSE)
+  expect_equal(precursor$layers[[1]]$data$order, c(1, 2, 3))
+  expect_equal(precursor$layers[[1]]$data$begin, c(1, 1, 1))
+  expect_equal(precursor$layers[[1]]$data$end, c(748, 748, 100))
+  expect_equal(data, original)
+  expect_equal(length(precursor$layers), 1)
+})
+
+test_that("draw_chains validates extent", {
+  data <- precursor_geometry_fixture()
+  expect_error(draw_chains(draw_canvas(data), data, extent = "complete"),
+               "arg.*annotated.*precursor")
 })
 
 
@@ -95,6 +166,36 @@ test_that("draw_domains",{
   # expect_equal(class(p$layers[[4]]$geom)[1], "GeomLabel")
   expect_equal(class(p$layers[[3]]$geom)[1], "GeomInteractiveRect") # ggiraph
   expect_equal(class(p$layers[[4]]$geom)[1], "GeomInteractiveLabel") # ggiraph
+})
+
+test_that("draw_domains renders precursor annotations by requested type", {
+  data <- data.frame(
+    type = c("SIGNAL", "PROPEP", "DOMAIN"),
+    description = c("Signal peptide", "Propeptide", "Peptidase M12B"),
+    begin = c(1, 20, 220),
+    end = c(19, 213, 456),
+    order = 1,
+    stringsAsFactors = FALSE
+  )
+  canvas <- ggplot2::ggplot()
+
+  signal <- draw_domains(canvas, data, type = "SIGNAL",
+                         label_domains = FALSE)
+  expect_equal(signal$layers[[1]]$data$type, "SIGNAL")
+  expect_equal(signal$layers[[1]]$data$begin, 1)
+  expect_equal(signal$layers[[1]]$data$end, 19)
+  # expect_equal(rlang::as_label(signal$layers[[1]]$mapping$tooltip),
+  #              "description") ##  importations '::' ou ':::' non déclarées depuis : ‘rlang’
+
+  propeptide <- draw_domains(canvas, data, type = "PROPEP",
+                             label_domains = FALSE)
+  expect_equal(propeptide$layers[[1]]$data$type, "PROPEP")
+  expect_equal(propeptide$layers[[1]]$data$begin, 20)
+  expect_equal(propeptide$layers[[1]]$data$end, 213)
+
+  absent <- draw_domains(canvas, data, type = "MOTIF",
+                         label_domains = FALSE)
+  expect_equal(nrow(absent$layers[[1]]$data), 0)
 })
 
 

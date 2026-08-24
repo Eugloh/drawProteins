@@ -1,3 +1,13 @@
+CHANGES IN VERSION 1.23.2
+-------------------------
+
+    o draw_chains() gains an opt-in precursor extent that draws one backbone
+    from residue 1 through sequenceLength per accession/order track. The
+    default continues to use original UniProt CHAIN coordinates.
+    o feature_to_dataframe() now retains translated sequenceLength metadata.
+    o SIGNAL and PROPEP rendering with draw_domains() is documented.
+
+
 geom rect changed to geom segment.
 
 

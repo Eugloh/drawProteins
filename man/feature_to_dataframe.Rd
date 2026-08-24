@@ -12,8 +12,10 @@ The number of lists corresponds to the number of accession numbers queried
 using get_features. The list of 6 contains protein names and features.}
 }
 \value{
-A dataframe with 9 variables including type, description, begin,
-end, length, accession, entryName, taxid and order for plotting.
+A dataframe including type, description, begin, end, length,
+accession, entryName, taxid, sequenceLength and order for plotting.
+sequenceLength is the length of the translated sequence, or NA_integer_ if
+the response has no non-empty sequence.
 }
 \description{
 This function works on the object returned by the get_features() function.

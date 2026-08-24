@@ -12,7 +12,9 @@ as one of the lists in the list of lists by the get_features() function.}
 }
 \value{
 A dataframe with features: "type", "description", "begin", "end" and
-adds accession, entryName and taxid for each row.
+adds accession, entryName, taxid and sequenceLength for each row.
+sequenceLength is the length of the translated sequence, or NA_integer_ if
+the response has no non-empty sequence.
 }
 \description{
 Converts the list of 6 JSON object created by getting the features from

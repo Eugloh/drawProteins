@@ -59,19 +59,73 @@ draw_canvas <- function(data, y_min = 0.5, add_y_max = 0.5, x_limits = NULL) {
 }
 
 
+precursor_chain_data <- function(data) {
+    if (!is.data.frame(data)) {
+        stop("`data` must be a data frame.", call. = FALSE)
+    }
+
+    required <- c("accession", "entryName", "order", "sequenceLength")
+    missing_columns <- setdiff(required, names(data))
+    if (length(missing_columns) > 0) {
+        stop(
+            paste0(
+                "Precursor rendering requires column(s) ",
+                paste(missing_columns, collapse = ", "),
+                "; regenerate feature data with feature_to_dataframe() ",
+                "or supply sequenceLength."
+            ),
+            call. = FALSE
+        )
+    }
+    if (!is.numeric(data$sequenceLength)) {
+        stop("`sequenceLength` must be numeric.", call. = FALSE)
+    }
+
+    track_key <- interaction(data$accession, data$order, drop = TRUE,
+                             lex.order = TRUE)
+    track_rows <- split(seq_len(nrow(data)), track_key)
+    segments <- lapply(track_rows, function(rows) {
+        lengths <- unique(data$sequenceLength[rows])
+        track <- paste0(data$accession[rows[[1]]], " (order ",
+                        data$order[rows[[1]]], ")")
+        if (length(lengths) != 1) {
+            stop(track, " has conflicting sequenceLength values.",
+                 call. = FALSE)
+        }
+        if (is.na(lengths) || !is.finite(lengths) || lengths <= 0) {
+            stop(track, " requires a finite positive sequenceLength; ",
+                 "regenerate feature data with feature_to_dataframe() ",
+                 "or supply sequenceLength.", call. = FALSE)
+        }
+        data.frame(
+            accession = data$accession[rows[[1]]],
+            entryName = data$entryName[rows[[1]]],
+            order = data$order[rows[[1]]],
+            begin = 1,
+            end = lengths,
+            stringsAsFactors = FALSE
+        )
+    })
+
+    result <- do.call(rbind, segments)
+    rownames(result) <- NULL
+    result[order(result$order), , drop = FALSE]
+}
+
+
 ### draw_chains
 #' Create ggplot2 object with protein chains from feature database
 #'
 #' \code{draw_chains} uses the dataframe containing the protein features to
-#' plot the chains, the full length proteins. It creates the basic plot element
-#' by determining the length of the longest protein. The ggplot2 function
-#' \code{geom_rect} is then used to draw each of the protein
-#' chains proportional to their number of amino acids (length).
+#' plot annotated chains or, on request, full translated precursor backbones.
+#' The ggplot2 function \code{geom_segment} draws each chain proportional to
+#' its number of amino acids.
 #'
 #' @usage draw_chains(p, data = data,
 #'     outline = "black", fill = "grey",
 #'     label_chains = TRUE, labels = data[data$type == "CHAIN",]$entryName,
-#'     size = 0.5, alpha = 1.0, label_size = 4)
+#'     size = 0.5, alpha = 1.0, label_size = 4,
+#'     extent = c("annotated", "precursor"))
 #'
 #' @param p ggplot2 object ideally created with \code{\link{draw_canvas}}.
 #' @param data Dataframe of one or more rows with the following column
@@ -86,6 +140,10 @@ draw_canvas <- function(data, y_min = 0.5, add_y_max = 0.5, x_limits = NULL) {
 #' @param size Size of the outline of the chains.
 #' @param alpha Transparency of the rectangles representing the chains.
 #' @param label_size Size of the text used for labels.
+#' @param extent Which backbone extent to draw. The default, "annotated", uses
+#' original CHAIN coordinates. "precursor" draws one segment from residue 1 to
+#' sequenceLength per accession/order track without changing feature data.
+#' Precursor mode requires a finite positive sequenceLength on every track.
 #'
 #' @return A ggplot2 object either in the plot window or as an object.
 #'
@@ -94,6 +152,10 @@ draw_canvas <- function(data, y_min = 0.5, add_y_max = 0.5, x_limits = NULL) {
 #' data("five_rel_data")
 #' p <- draw_canvas(five_rel_data)
 #' draw_chains(p, five_rel_data)
+#'
+#' # Feature data created by current feature_to_dataframe() can opt into a
+#' # complete translated precursor backbone.
+#' # draw_chains(p, feature_data, extent = "precursor")
 #'
 #' # draws five chains with different colours to default
 #' data("five_rel_data")
@@ -112,17 +174,27 @@ draw_chains <- function(p,
                         labels = data[data$type == "CHAIN",]$entryName,
                         size = 0.5,
                         alpha = 1.0,
-                        label_size = 4){
+                        label_size = 4,
+                        extent = c("annotated", "precursor")){
 
     begin=end=NULL
-    p <- p + ggplot2::geom_segment(data = data[data$type == "CHAIN",],
+    extent <- match.arg(extent)
+    chain_data <- if (extent == "annotated") {
+        data[data$type == "CHAIN", ]
+    } else {
+        precursor_chain_data(data)
+    }
+    if (missing(labels)) {
+        labels <- chain_data$entryName
+    }
+    p <- p + ggplot2::geom_segment(data = chain_data,
                                    mapping = ggplot2::aes(x = begin, xend = end, y = order, yend = order),
                                    colour = fill, linewidth = size)
 
     if(label_chains == TRUE){
         p <- p +
             ggplot2::annotate("text", x = -10,
-                y = data[data$type == "CHAIN",]$order,
+                y = chain_data$order,
                         label = labels,
                         hjust = 1,
                         size = label_size)
@@ -608,4 +680,3 @@ draw_folding <- function(p,
     }
     return(p)
 }
-

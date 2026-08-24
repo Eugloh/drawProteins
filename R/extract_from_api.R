@@ -8,8 +8,10 @@
 #' The number of lists corresponds to the number of accession numbers queried
 #' using get_features. The list of 6 contains protein names and features.
 #'
-#' @return A dataframe with 9 variables including type, description, begin,
-#' end, length, accession, entryName, taxid and order for plotting.
+#' @return A dataframe including type, description, begin, end, length,
+#' accession, entryName, taxid, sequenceLength and order for plotting.
+#' sequenceLength is the length of the translated sequence, or NA_integer_ if
+#' the response has no non-empty sequence.
 #'
 #' @examples
 #' data("rel_json")
@@ -80,7 +82,9 @@ phospho_site_info <- function(features){
 #' as one of the lists in the list of lists by the get_features() function.
 #'
 #' @return A dataframe with features: "type", "description", "begin", "end" and
-#' adds accession, entryName and taxid for each row.
+#' adds accession, entryName, taxid and sequenceLength for each row.
+#' sequenceLength is the length of the translated sequence, or NA_integer_ if
+#' the response has no non-empty sequence.
 #'
 #' @examples
 #' data("five_rel_list")
@@ -94,6 +98,15 @@ phospho_site_info <- function(features){
 # it should be a better function to use than either of the above functions
 # which I will probably remove at some point
 extract_feat_acc <- function(features_list){
+    sequence_length <- if (is.null(features_list$sequence) ||
+                           length(features_list$sequence) == 0 ||
+                           is.na(features_list$sequence[[1]]) ||
+                           !nzchar(features_list$sequence[[1]])) {
+        NA_integer_
+    } else {
+        as.integer(nchar(features_list$sequence[[1]]))
+    }
+
     # create the data.frame object called features
     features <- NULL
 
@@ -125,8 +138,8 @@ extract_feat_acc <- function(features_list){
                     data.frame(type = "CHAIN",
                     description = "NONE",
                     begin = 1,
-                    end = nchar(features_list$sequence),
-                    length = nchar(features_list$sequence) - 1))
+                    end = sequence_length,
+                    length = sequence_length))
     }
 
     # add accession number to each row of dataframe
@@ -140,6 +153,10 @@ extract_feat_acc <- function(features_list){
     # add taxid to each row of datafame
     features_dataframe$taxid <- rep(features_list$taxid,
         times = nrow(features_dataframe))
+
+    # Preserve the translated sequence length independently of feature ranges.
+    features_dataframe$sequenceLength <- rep(sequence_length,
+                                              nrow(features_dataframe))
 
     return(features_dataframe)
 }

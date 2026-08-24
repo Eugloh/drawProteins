@@ -41,6 +41,27 @@ schematic.
 
 The Vignette gives a good overview of the package.
 
+## Processed proteins and precursor backbones
+
+UniProt `CHAIN` annotations can describe a mature processed product rather
+than the complete translated sequence. To plot observations in full precursor
+coordinates, opt into a precursor backbone and add the processing annotations:
+
+```r
+features <- feature_to_dataframe(get_features("O14672"))
+p <- draw_canvas(features)
+p <- draw_chains(p, features, extent = "precursor")
+p <- draw_domains(p, features, type = "SIGNAL", label_domains = FALSE)
+p <- draw_domains(p, features, type = "PROPEP", label_domains = FALSE)
+p <- draw_domains(p, features, type = "DOMAIN", label_domains = FALSE)
+```
+
+Precursor mode changes only the visual backbone. All UniProt feature
+coordinates—including `CHAIN`, `SIGNAL`, and `PROPEP`—remain unchanged.
+SIGNAL and PROPEP annotations can therefore explain observations before the
+mature CHAIN. Separate calls retain description-based fills, so their styling
+can be distinguished with the resulting ggplot2 fill scale.
+
 Sample script on [R for Biochemists
 blog](http://rforbiochemists.blogspot.co.uk/2017/11/using-drawproteins-for-draw-nf-kappab.html)
 

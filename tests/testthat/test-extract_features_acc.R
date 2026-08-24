@@ -11,6 +11,61 @@
 # write function to do unit tests with is extract_feat_acc
 context("features_to_dataframe")
 
+processed_protein_fixture <- function(sequence = paste(rep("A", 748),
+                                                        collapse = "")) {
+  list(
+    accession = "TEST_PROCESSED",
+    entryName = "TEST_PROCESSED_HUMAN",
+    taxid = 9606,
+    sequence = sequence,
+    features = list(
+      list(type = "SIGNAL", description = "Signal peptide",
+           begin = 1, end = 19),
+      list(type = "PROPEP", description = "Propeptide",
+           begin = 20, end = 213),
+      list(type = "CHAIN", description = "Mature chain",
+           begin = 214, end = 748),
+      list(type = "DOMAIN", description = "Peptidase M12B",
+           begin = 220, end = 456),
+      list(type = "TRANSMEM", description = "Helical",
+           begin = 673, end = 693)
+    )
+  )
+}
+
+test_that("feature conversion preserves coordinates and sequence length", {
+  converted <- feature_to_dataframe(list(processed_protein_fixture()))
+
+  expect_type(converted$sequenceLength, "integer")
+  expect_equal(converted$sequenceLength, rep(748L, 5))
+  expect_equal(converted$type,
+               c("SIGNAL", "PROPEP", "CHAIN", "DOMAIN", "TRANSMEM"))
+  expect_equal(converted$begin, c(1, 20, 214, 220, 673))
+  expect_equal(converted$end, c(19, 213, 748, 456, 693))
+})
+
+test_that("feature conversion records an unknown missing sequence length", {
+  converted <- extract_feat_acc(processed_protein_fixture(sequence = NULL))
+
+  expect_true(all(is.na(converted$sequenceLength)))
+  expect_type(converted$sequenceLength, "integer")
+})
+
+test_that("missing CHAIN fallback spans the complete sequence inclusively", {
+  fixture <- processed_protein_fixture(sequence = paste(rep("A", 100),
+                                                        collapse = ""))
+  fixture$features <- Filter(function(feature) feature$type != "CHAIN",
+                             fixture$features)
+
+  converted <- extract_feat_acc(fixture)
+  chain <- converted[converted$type == "CHAIN", ]
+
+  expect_equal(chain$begin, 1)
+  expect_equal(chain$end, 100)
+  expect_equal(chain$length, 100)
+  expect_equal(chain$sequenceLength, 100L)
+})
+
 test_that("features_to_dataframe",{
 
   # load data from the package
@@ -21,7 +76,7 @@ test_that("features_to_dataframe",{
     rel_data
   expect_is(rel_data, "data.frame")
   expect_equal(nrow(rel_data), 75)
-  expect_equal(ncol(rel_data), 9)
+  expect_equal(ncol(rel_data), 10)
 
   # load data from the package
   data("five_rel_list")
@@ -34,8 +89,8 @@ test_that("features_to_dataframe",{
 
   expect_is(prot_data, "data.frame")
 
-  # ncol at this point 9
-  expect_equal(ncol(prot_data), 9)   # exact for sample data
+  # ncol at this point 10
+  expect_equal(ncol(prot_data), 10)   # exact for sample data
 
   expect_equal(nrow(prot_data), 319)  # exact for sample data
   expect_match(prot_data[1,1], "CHAIN") # first element should be "CHAIN"
@@ -45,7 +100,8 @@ test_that("features_to_dataframe",{
   expect_match(colnames(prot_data)[6], "accession") # 6th col name - accession
   expect_match(colnames(prot_data)[7], "entryName") # 7th col name is entryName
   expect_match(colnames(prot_data)[8], "taxid") # 8th column name is taxid
-  expect_match(colnames(prot_data)[9], "order") # 9th column name is order
+  expect_match(colnames(prot_data)[9], "sequenceLength")
+  expect_match(colnames(prot_data)[10], "order") # 10th column name is order
 
 })
 
@@ -65,14 +121,15 @@ test_that("extract_feat_acc works to give ",{
 
   expect_is(res, "data.frame") # generic
 
-  # ncol at this point only 8 as order is added later.
-  expect_equal(ncol(res), 8)   # exact for sample data
+  # ncol at this point only 9 as order is added later.
+  expect_equal(ncol(res), 9)   # exact for sample data
 
   expect_equal(nrow(res), 75)  # exact for sample data
   expect_match(res[1,1], "CHAIN") # first element should be "CHAIN"
   expect_match(colnames(res)[3], "begin") # 3rd column name is begin
   expect_match(colnames(res)[4], "end") # 4th column name is end
   expect_match(colnames(res)[6], "accession") # 6th column name is accession
+  expect_match(colnames(res)[9], "sequenceLength")
 
   # need to add tests to check structure is going to work for plotting...
 
